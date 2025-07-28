@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  nestjs-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs-app
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres
+    environment:
+      - HOSTDB=${HOSTDB}
+      - USERNAMEDB=${USERNAMEDB}
+      - PASSWORDDB=${PASSWORDDB}
+      - DATABASEDB=${DATABASEDB}
+      - JWTSECRET=${JWTSECRET}
+      - PORTDB=${PORTDB}
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_DB=${DATABASEDB}
+      - POSTGRES_USER=${USERNAMEDB}
+      - POSTGRES_PASSWORD=${PASSWORDDB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+
+volumes:
+  pgdata:
+
+networks:
+  backend:
